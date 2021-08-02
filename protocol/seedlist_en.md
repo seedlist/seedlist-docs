@@ -63,9 +63,14 @@ Based on the definition of spaceName, label and password in the "Overview", we w
    
    f. Cycle through the above c~e process and sign rand0 times (generated in step b);
    
-   g. After step f, we will get two strings. After concatenating the two strings, we obtain the final seed entropy after hashing;
+   g. After step f, we will get two strings, after concatenating the two strings, we get s3;
    
-   h. Based on the seed entropy obtained in step g, generate an Ethereum wallet address, which is the key space indicator;
+   h. Based on s3, obtain the random salt string salt with a random length of 32 from the following random strings:
+      CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|" ;
+   
+   i. Take s3 as the slow hash object, take h step salt as the salt value, and obtain the final hash as the key value based on the scrypt algorithm; among them, N, r, p, dkLen are set to: 32, 64, 16, 64;
+
+   j. Based on step i, generate an Ethereum wallet address, which is the key space indicator;
    ```
 
 
@@ -84,7 +89,7 @@ Based on the definition of spaceName, label and password in the "Overview", we w
     
    e. Take hash0 as the slow hash object, take the salt of step d as the salt value, and obtain the final hash as the key value based on the scrypt algorithm; among them, N, r, p, dkLen are set to: 32, 64, 16, 64;
     
-   d. Based on the final key of step e, perform AES encryption on label to obtain label ciphertext;
+   f. Based on the final key of step e, perform AES encryption on label to obtain label ciphertext;
    ```
 
 
@@ -106,12 +111,19 @@ Based on the definition of spaceName, label and password in the "Overview", we w
    
    g. Splice the h1 h2 h3 obtained after rand0 operations, and calculate the hash value after the splicing, and record it as hash0;
    
-   h. Take the 4 bytes before and after the hash0 value to obtain an Int32 integer; based on the Int32 integer, obtain a random value rand1 located in [0, 8];
+   h. Based on hash0 and the following random string, obtain a random substring with a length of 32 as the salt of scrypt:
+     CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|" ;
    
-   i. Using rand1 as the step size, the modulus of the following string length will be inserted into hash0; the calculation method of the insertion position is: hash 0 for hash0, and repeat the algorithm process of step h to obtain the random value rand2;
+   i. Take the 4 bytes before and after the hash0 value to get an Int32 integer; based on the Int32 integer, get a random value rand1 located in [0, 8];
+   
+   j. Based on hash0, take salt as the salt value, perform scrypt slow hash calculation, obtain the hash value, and re-assign it to hash0;
+   
+   k. Use rand1 as the step size, take the following string length modulo, insert the character at the modulus value into hash0; the calculation method of the insertion position is: calculate the hash for hash0, and repeat the algorithm process of step i to get the random value rand2;
        rand2 is the insertion position;
-   CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|" ;
-   h. Repeat step i 32 times;
-   j. Use the resulting string (98 characters) as the key to encrypt user data with AES;
+      CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|" ;
+   
+   l. Repeat step i 32 times;
+   
+   m. Use the final string (98 characters) as the key to encrypt user data with AES;
    ```
 

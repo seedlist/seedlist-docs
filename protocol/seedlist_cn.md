@@ -65,9 +65,14 @@ password:  用户用来生成密钥的起始密码值，需要用户输入提供
 
    f. 将上述的c~e过程，循环递签rand0次(b步骤生成)；
 
-   g. 经过f步骤后，我们会得到两个字符串，将两个字符串拼接后，求hash后得到最终的种子熵；
+   g. 经过f步骤后，我们会得到两个字符串，将两个字符串拼接后，得到s3;
+   
+   h. 基于s3, 从以下随机串中，求得随机长度为32的随机盐值字符串salt：
+      CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|"; 
+   
+   i. 以 s3 为慢hash对象，以h步骤salt为盐值，基于scrypt算法求得最终hash作为密钥值；其中，N, r, p, dkLen 分别设置为：32，64，16，64;
 
-   h. 基于g步骤得到的种子熵，生成一个以太坊钱包地址，该地址便是密钥空间标示；
+   j. 基于i步骤, 生成一个以太坊钱包地址，该地址便是密钥空间标示；
    ```
 
 2. 加密label
@@ -84,7 +89,7 @@ password:  用户用来生成密钥的起始密码值，需要用户输入提供
   
    e. 以 hash0 为慢hash对象，以d步骤salt为盐值，基于scrypt算法求得最终hash作为密钥值；其中，N, r, p, dkLen 分别设置为：32，64，16，64;
  
-   d. 基于e步的最终密钥，对label进行AES加密获得label密文；
+   f. 基于e步的最终密钥，对label进行AES加密获得label密文；
    ```
 
 3. 加密明文
@@ -103,14 +108,21 @@ password:  用户用来生成密钥的起始密码值，需要用户输入提供
    f. 将上述c~e过程重复rand0次；
 
    g. 将经过rand0次操作后得到的h1 h2 h3进行拼接，并计算拼接后的hash值，记为hash0；
-
-   h. 取hash0值的前后4个字节，获得Int32整数；基于Int32整数，获取一个位于[0, 8]中的随机值 rand1；
-
-   i. 以rand1为步长，以下面字符串长度求模，将将模值处字符插入hash0；插入位置的计算方式为：对hash0求hash，并重复h步骤的算法过程得到随机值rand2；
+   
+   h. 基于hash0和以下的随机串，求得长度为32的随机子字符串作为scrypt的盐值：
+     CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|"; 
+   
+   i. 取hash0值的前后4个字节，获得Int32整数；基于Int32整数，获取一个位于[0, 8]中的随机值 rand1；
+   
+   j. 基于hash0， 以salt为盐值，进行scrypt慢hash计算，求得hash值，并重新赋值给hash0；
+   
+   k. 以rand1为步长，以下面字符串长度求模，将模值处字符插入hash0；插入位置的计算方式为：对hash0求hash，并重复i步骤的算法过程得到随机值rand2；
        rand2即为插入位置；
-   CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|";
-   h. 重复i步骤32次；
-   j. 以最终得到的字符串(98字符)，作为为密钥，AES加密用户数据；
+      CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|";
+   
+   l. 重复i步骤32次；
+   
+   m. 以最终得到的字符串(98字符)，作为为密钥，AES加密用户数据；
    ```
 
    
