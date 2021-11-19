@@ -1,5 +1,12 @@
 English | [中文](seedlist_cn.md)
-#### I. Overview
+
+#### I. Principles
+1. Cryptography algorithms should choose mature, time-precipitated and mathematically proven algorithms to be safe;
+2. Try to deal with confusion as much as possible, and improve privacy by increasing randomness;
+3. In the time that the user can tolerate, the algorithm is used to extend the encryption time to increase the attack cost of the adversary;
+4. Keep it simple;
+
+#### II. Overview
 
 The security of the private key/mnemonic phrase is fundamentally an offensive and defensive game between the storage party, the user, and the hacker; from a defensive perspective, we should assume:
 
@@ -17,7 +24,7 @@ password: The initial password value used by the user to generate the key, which
 
 
 
-#### II. The storage party is completely reliable
+#### III. The storage party is completely reliable
 
 The storage party of the private key/mnemonic phrase here is the storage party in the general sense. It includes common centralized cloud storage, local disk storage, hardware wallet storage, paper storage, decentralized storage and even brain memory, etc.;
 Similarly, we need to define reliability: as long as the user completes the storage behavior, at any subsequent time, the original content that is indistinguishable from the stored content can be obtained. Therefore: the core appeal is that it is available at any time and the content is not different;
@@ -25,7 +32,7 @@ Based on the definition of reliable private key/mnemonic storage, in contrast to
 
 Considering that the storage volume of the private key/mnemonic phrase is very small (even if it is encrypted, it will remain in a few hundred bytes). At present, the Ethereum contract storage area can fully meet the above-mentioned reliability requirements;
 
-#### III. Encryption Strength
+#### IV. Encryption Strength
 
 Generally speaking, if the encryption algorithm is reliable, the encryption strength depends on two aspects:
 
@@ -44,7 +51,7 @@ Generally speaking, if the encryption algorithm is reliable, the encryption stre
 
 
 
-#### IV. Encryption process
+#### V. Encryption process
 
 Based on the definition of spaceName, label and password in the "Overview", we will gradually carry out the following encryption derivation process:
 
