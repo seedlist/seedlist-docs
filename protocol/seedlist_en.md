@@ -122,7 +122,7 @@ Based on the definition of spaceName, label and password in the "Overview", we w
        rand2 is the insertion position;
       CHARS="1qaz!QAZ2w?sx@WSX.(=]3ec#EDC/)P:4rfv$RF+V5t*IK<9og}b%TGB6OL>yhn^YHN-[d'_7ujm&UJ0p;{M8ik,l|" ;
    
-   l. Repeat step i 32 times;
+   l. Repeat step i~k 32 times;
    
    m. Use the final string (98 characters) as the key to encrypt user data with AES;
    ```
